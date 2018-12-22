@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	
+	<!-- jQuery 3.1.1 -->
+	<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+	
+	<!-- Our JS -->
+	<script>
+		
+		
+	</script>
+</head>
+<body>
+    <div class="container">
+		<h1 class="text-center">Users list</h1>
+		<div class="row">
+			<div class="col-10 offset-1">
+				<table class="table table-striped">
+				  <thead>
+					<tr>
+					  <th>#</th>
+					  <th>First Name</th>
+					  <th>Last Name</th>
+					  <th>Username</th>
+					  <th>IP</th>
+					  <th>Country</th>
+					  <th>Country Flag</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<tr>
+					  <th>1</th>
+					  <td>Mark</td>
+					  <td>Otto</td>
+					  <td>@mdo</td>
+					  <td>0.0.0.0</td>
+					  <td></td>
+					  <td></td>
+					</tr>
+					<tr>
+					  <th>2</th>
+					  <td>Jacob</td>
+					  <td>Thornton</td>
+					  <td>@fat</td>
+					  <td>0.0.0.0</td>
+					  <td></td>
+					  <td></td>
+					</tr>				  
+					<tr>
+						<th>3</th>
+					  <td>Larry</td>
+					  <td>the Bird</td>
+					  <td>@twitter</td>
+					  <td>0.0.0.0</td>
+					  <td></td>
+					  <td></td>
+					</tr>
+					<tr>
+					  <th>4</th>
+					  <td>Jhon H.</td>
+					  <td>Smith</td>
+					  <td>@colonel</td>
+					  <td>0.0.0.0</td>
+					  <td></td>
+					  <td></td>
+					</tr>
+					<tr>
+					  <th>5</th>
+					  <td>B.A.</td>
+					  <td>Baracus</td>
+					  <td>@driver</td>
+					  <td>0.0.0.0</td>
+					  <td></td>
+					  <td></td>
+					</tr>
+				  </tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+<script>
+	function gen(){
+		return (Math.random()*255).toFixed(0);
+	}
+	
+	$("td:nth-child(5)").each(function(index, tag){
+		tag.innerHTML = gen() + "." + gen() + "." + gen() + "." + gen();
+	});
+</script>	
+</body>
+</html>
