@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<script
+	src="https://code.jquery.com/jquery-3.1.1.min.js"
+	integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+	crossorigin="anonymous"></script> 
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+			
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+	  
+<!--	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" />-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+
+	
+</head>
+<body style="padding:20px">
+
+	<div class="row" >
+	<div class="col-12 text-center">
+				<h4 class="display-6">Курс доллара за период:<span id="start"></span><span id="end"></span><span id="is_correct"></span></h4>
+			</div>	
+	<br><br>		
+	
+	<div class="input-group date col-3" data-provide="datepicker" data-date-end-date="+0d" id="datetimepicker1">
+	  <input type="text" class="form-control">
+	  <div class="input-group-addon">
+		<span class="glyphicon glyphicon-calendar"></span>
+	  </div>
+	</div>
+	
+		<div class="input-group date col-3" data-provide="datepicker" data-date-end-date="+0d" id="datetimepicker2">
+	  <input type="text" class="form-control">
+	  <div class="input-group-addon">
+		<span class="glyphicon glyphicon-calendar"></span>
+	  </div>
+	</div>
+	</div>
+	<br><br>
+		<div id="container" style="width:100%; height:400px;"></div>
+
+
+<script>
+
+		function url(date){
+			return `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=USD&date=${date}&json`;
+		};
+		
+		function diagram(courses,year,month,day){
+			$(function () { 
+				var myChart = Highcharts.chart('container', {
+					chart: {
+						type: 'line'
+					},
+					title: {
+						text: 'Курс доллара НБУ'
+					},
+					xAxis: {
+						type: 'datetime',
+						dateTimeLabelFormats: {
+							day: '%e %b'
+						},
+						title: {
+							text: 'Даты'
+						}
+					},
+					yAxis: {
+						title: {
+							text: 'UAH / USD'
+						},
+					},
+					tooltip: {
+						crosshairs: true,
+						pointFormat: '{series.name}: <b>{point.y} грн. за 1долл.</b>'
+					},
+					legend: {
+						enabled: false
+					},
+					series: [{
+						name: 'Курс',
+						data: courses,
+						pointStart: Date.UTC(year, month, day),
+						pointInterval: 24 * 3600 * 1000 // one day
+					}]
+					});
+					});
+		};
+
+		
+	function main(sum){
+		if($('#datetimepicker2').datepicker('getDate') && $('#datetimepicker1').datepicker('getDate')){
+			var date = new Date();
+			date.setFullYear($('#datetimepicker1').datepicker('getDate').getYear() + 1900,$('#datetimepicker1').datepicker('getDate').getMonth(),$('#datetimepicker1').datepicker('getDate').getDate());
+			var dates = [];
+			dates.push(`${date.getFullYear()}${((date.getMonth() + 1) < 10)? "0" + (date.getMonth() + 1):(date.getMonth() + 1)}${date.getDate()}`);
+			for (var i = 0; i < sum; i++){
+				date.setDate(date.getDate() + 1);
+				dates.push(`${date.getFullYear()}${((date.getMonth() + 1) < 10)? "0" + (date.getMonth() + 1):(date.getMonth() + 1)}${date.getDate()}`);
+			//	console.log(dates);
+			};
+			var courses = [];
+			var courses_date = [];
+			for (var i = 0; i <= sum; i++){
+				var ajax_url = url(`${dates[i]}`);
+				$.getJSON(ajax_url, (resp)=>{
+					var temp = [];
+					temp.push(resp[0].exchangedate,resp[0].rate);
+					courses_date.push(temp);
+			//		console.log(courses_date);
+				});
+			};
+			
+		setTimeout(function check_data(){
+			if (courses_date[sum] != undefined){
+				for (var i = 0; i <= sum; i++){
+					var dat = (courses_date[i][0].substr(6,4)) + (courses_date[i][0].substr(3,2)) + (courses_date[i][0].substr(0,2));
+				//	console.log(dat);
+					dat = parseInt(dat);
+					courses_date[i][0] = dat;
+				//	console.log(courses_date[i]);
+				};
+				courses_date.sort((a,b) => a[0] - b[0]);
+				for (var i = 0; i <= sum; i++){
+					var cours = +courses_date[i][1].toFixed(2);
+					courses.push(cours);
+				};
+				var year = $('#datetimepicker1').datepicker('getDate').getYear() + 1900;
+				var month = $('#datetimepicker1').datepicker('getDate').getMonth();
+				var day = $('#datetimepicker1').datepicker('getDate').getDate();
+				diagram(courses,year,month,day);
+			//	console.log(courses);
+			}else setTimeout(check_data,200);	
+			},100);
+		}
+	};
+
+	
+$(function(){
+	
+	function check_interval(){
+		var compar = $('#datetimepicker2').datepicker('getDate') < $('#datetimepicker1').datepicker('getDate');
+		$('#is_correct').append(`${(compar == true)? " Invalid period": ""}`);
+		
+	};
+	
+	$('#datetimepicker1').datepicker({
+	  format: 'd M yyyy'
+	});
+	$("#datetimepicker1").on("change", function () {
+			$('#start').empty();
+			$('#is_correct').empty();
+    		var day_st = $('#datetimepicker1').datepicker('getDate').getDate();
+    		var month_st = $('#datetimepicker1').datepicker('getDate').getMonth() + 1;
+    		var year_st = $('#datetimepicker1').datepicker('getDate').getYear() + 1900;
+			$('#start').append(` ${(day_st<10)? "0"+day_st : day_st}.${(month_st<10)? "0"+month_st : month_st}.${year_st}`);
+			if($('#datetimepicker2').datepicker('getDate')){
+				var sum = ($('#datetimepicker2').datepicker('getDate') - $('#datetimepicker1').datepicker('getDate')) / (3600*24*1000);
+				check_interval();
+				if(sum > 60){
+					$('#is_correct').append(`.  ${sum.toFixed(0)} days are very big period.`);
+				}else{main(sum)};
+			}
+        });
+
+	
+	$('#datetimepicker2').datepicker({
+	  format: 'd M yyyy'
+	});
+	$("#datetimepicker2").on("change", function () {
+			$('#end').empty();
+			$('#is_correct').empty();
+    		var day_en = $('#datetimepicker2').datepicker('getDate').getDate();
+    		var month_en = $('#datetimepicker2').datepicker('getDate').getMonth() + 1;
+    		var year_en = $('#datetimepicker2').datepicker('getDate').getYear() + 1900;
+			$('#end').append(` - ${(day_en<10)? "0"+day_en : day_en}.${(month_en<10)? "0"+month_en : month_en}.${year_en}`);
+			var sum = ($('#datetimepicker2').datepicker('getDate') - $('#datetimepicker1').datepicker('getDate')) / (3600*24*1000);
+				check_interval();
+				if(sum > 60){
+					$('#is_correct').append(`.  ${sum.toFixed(0)} days are very big period.`);
+				}else{main(sum)};
+        });
+});
+
+</script>
+
+			
+</body>
+</html>
