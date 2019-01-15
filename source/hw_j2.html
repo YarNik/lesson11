@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+   	
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+	
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	  
+	
+	
+	<!-- Our CSS -->
+	<style>
+	
+		.container, h1 {
+			margin-top: 5vh;
+		}
+		
+		h1 {
+			margin-bottom: 20px;
+		}
+		
+		.dropdown, .filter, .col, .col-3 {
+			margin-top: 4vh;
+		}
+
+	</style>
+	
+	<!-- Our JS -->
+	<script>
+				
+	</script>
+</head>
+<body>
+	<div class="container">
+	
+		<div class="media">
+		<img src="https://hotline.ua/img/uploads/clients/img_585bd3bedc443710440530.jpg" width="300" class="mr-3" alt="...">
+		  <div class="media-body">
+			<h3 class="mt-0">Perfect Mobile Shop</h3>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean laoreet cursus lacinia. Donec malesuada, dui eu vestibulum volutpat, ante urna mollis nibh, vitae tempor magna dui ac elit. Integer venenatis massa eu felis ullamcorper suscipit. Integer aliquam ornare molestie. Nam varius mattis ipsum, in bibendum augue sodales at.
+		  </div>
+		</div>
+	
+		<div class="row">
+			<div class="col-8">	
+				<div class="dropdown">
+				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Сортировать по: 
+				  </button>
+				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" id="price_up" href="#">Возрастанию цены</a>
+					<a class="dropdown-item" id="price_down" href="#">Убыванию цены</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" id="rating_up" href="#">Возрастанию рейтинга</a>
+					<a class="dropdown-item" id="rating_down" href="#">Убыванию рейтинга</a>
+				  </div>
+				</div>
+										
+				<div class="col">
+					<ul class="list-group list-group-flush" id="phones_ul">
+					</ul>
+				</div>
+			</div>
+
+			<div class="col-3">
+				<p>
+				  <label for="amount">Фильтр по цене:</label>
+				  <input type="text" id="amount" readonly style="border:0; color:black">
+				</p>
+				<div id="slider-range"></div>
+			</div>	
+		</div>
+	</div>
+	
+	<script>
+	
+		var URL = "https://files.courses.dp.ua/web/json/data01.php";
+		
+		(async function(){
+		
+			var phones = await fetch(URL);
+			phones = await phones.json();
+			//console.log(phones);
+			
+			
+			function sketch(){
+				phones_ul.innerHTML = "";
+				phones.forEach( item => {
+				var li = document.createElement("li");
+				li.className = "list-group-item justify-content-between";
+				li.innerHTML = item.title;
+				
+				var span1 = document.createElement("span");
+				span1.innerHTML = `<i class="fas fa-star" style="color: Gold"></i> ${item.rating}`;
+				
+				var span = document.createElement("span");
+				span.innerHTML = item.price;
+				
+				var button_1 = document.createElement("button");
+				button_1.innerHTML = "Купить";
+				
+				li.appendChild(span1);
+				li.appendChild(span);
+				li.appendChild(button_1);
+				phones_ul.appendChild(li);
+			})}
+			
+			sketch();
+	
+			$("#price_up").on("click", ()=>{
+				phones.sort((a,b) => parseInt(a.price) - parseInt(b.price));
+				sketch();
+				filter(min_p, max_p);
+			});
+			$("#price_down").on("click", ()=>{
+				phones.sort((a,b) => parseInt(b.price) - parseInt(a.price));
+				sketch();
+				filter(min_p, max_p);
+			});
+			$("#rating_up").on("click", ()=>{
+				phones.sort((a,b) => (a.rating) - (b.rating));
+				sketch();
+				filter(min_p, max_p);
+			});
+			$("#rating_down").on("click", ()=>{
+				phones.sort((a,b) => (b.rating) - (a.rating));
+				sketch();
+				filter(min_p, max_p);
+			});
+
+		
+			var prices = phones.map(item => parseInt(item.price));
+			//console.log(prices);
+			var low = Math.min(...prices);
+			var high = Math.max(...prices);
+			var min_p = low;
+			var max_p = high;
+						
+			//console.log(low, high);
+			var spans = document.querySelectorAll("li span + span");
+			
+			$( function() {
+					$( "#slider-range" ).slider({
+					  range: true,
+					  min: low,
+					  max: high,
+					  values: [ low, high ],
+					  slide: function( event, ui ) {
+						$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+						//console.log(ui.values[ 0 ]);
+						min_p = ui.values[ 0 ];
+						max_p = ui.values[ 1 ];
+						//console.log(min_p);
+						filter(min_p, max_p);
+					  }
+					});
+					$( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+					  " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+				} );
+			
+			function filter(min_p, max_p){
+				spans = document.querySelectorAll("li span + span");
+				spans.forEach(span => {
+					var price = parseInt(span.innerHTML);
+					if (price >= min_p && price <= max_p){
+						span.parentNode.style.display = "flex";
+					}else {
+						span.parentNode.style.display = "none";
+					}
+				})
+			};
+				//console.log(spans);
+				
+		})();
+	
+	</script>
+	
+	
+	
+	
+</body>
+</html>
